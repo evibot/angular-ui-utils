@@ -63,7 +63,7 @@ angular.module('ui.event',[]).directive('uiEvent', ['$parse',
  *
  * @example: 'Hello :name, how are you :day'.format({ name:'John', day:'Today' })
  * @example: 'Records $0 to $1 out of $2 total'.format(['10', '20', '3000'])
- * @example: '$0 agrees to all mentions $0 makes in the event that $0 hits a tree while $0 is driving drunk'.format('Bob')
+ * @example: '$0 agrees to all mentions $0 makes in the event that $0 hits a tree whiscle $0 is driving drunk'.format('Bob')
  */
 angular.module('ui.format',[]).filter('format', function(){
   'use strict';
@@ -2036,11 +2036,11 @@ angular.module('ui.scrollfix',[]).directive('uiScrollfix', ['$window', function 
         }
       }
 
-      $target.on('scroll', onScroll);
+      $target.on('scroll load', onScroll);
 
       // Unbind scroll event handler when directive is removed
       scope.$on('$destroy', function() {
-        $target.off('scroll', onScroll);
+        $target.off('scroll load', onScroll);
       });
     }
   };
