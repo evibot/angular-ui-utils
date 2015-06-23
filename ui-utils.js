@@ -2003,7 +2003,10 @@ angular.module('ui.scrollfix',[]).directive('uiScrollfix', ['$window', function 
       var absolute = true,
           shift = 0,
           fixLimit,
-          $target = uiScrollfixTarget && uiScrollfixTarget.$element || angular.element($window);
+          //$target = uiScrollfixTarget && uiScrollfixTarget.$element || angular.element($window);
+          $target = uiScrollfixTarget && uiScrollfixTarget.$element || angular.element($window),
+          originalHeight = elm.outerHeight(),
+          offsetMark, $bottom;
 
       if (!attrs.uiScrollfix) {
           absolute = false;
@@ -2016,6 +2019,9 @@ angular.module('ui.scrollfix',[]).directive('uiScrollfix', ['$window', function 
           absolute = false;
           shift = parseFloat(attrs.uiScrollfix.substr(1));
         }
+      }
+      if (attrs.uiScrollfixBottom) {
+        $bottom = angular.element(attrs.uiScrollfixBottom);
       }
 
       //fixLimit = absolute ? attrs.uiScrollfix : elm[0].offsetTop + shift;
@@ -2034,6 +2040,30 @@ angular.module('ui.scrollfix',[]).directive('uiScrollfix', ['$window', function 
         } else if (elm.hasClass('ui-scrollfix') && offset < fixLimit) {
           elm.removeClass('ui-scrollfix');
         }
+        if (!!attrs.uiScrollfixBottom && elm.hasClass('ui-scrollfix')) {
+          var elmBottom = elm.offset().top + elm.outerHeight();
+
+          if (!elm.hasClass('ui-scrollfix-bottom') && elmBottom >= $bottom.offset().top) {
+            offsetMark = offset;
+            elm.addClass('ui-scrollfix-bottom');
+          } else if(elm.hasClass('ui-scrollfix-bottom') && offsetMark > offset) {
+            elm.removeClass('ui-scrollfix-bottom');
+          }
+
+          if (typeof(attrs.uiScrollfixSquish) !== 'undefined') {
+            if (elm.hasClass('ui-scrollfix-bottom') || originalHeight > elm.outerHeight()) {
+              elm.css('bottom', ($window.innerHeight + offset - $bottom.offset().top));
+            } else {
+              elm.css('bottom', '');
+            }
+          } else {
+            if (elm.hasClass('ui-scrollfix-bottom')) {
+              var elementTop = elm.offset().top - elm.parent().offset().top + ($bottom.offset().top - elmBottom);
+              elm.css({position: 'absolute', top: elementTop});
+            } else {
+              elm.css({position: '', top: ''});
+            }
+          }
       }
 
       $target.on('scroll load', onScroll);
